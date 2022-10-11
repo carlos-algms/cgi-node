@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "commonjs",
+    "target": "ES2021",
+		"checkJs": true
+  },
+  "exclude": ["node_modules", "cgi-bin"],
+  "include": ["src"],
+}
