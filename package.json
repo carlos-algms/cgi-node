@@ -4,19 +4,18 @@
   "version": "0.1.0",
   "description": "Run Node.js as CGI-Module on any Apache",
   "homepage": "http://www.cgi-node.org",
-  "bugs": "https://code.google.com/p/cgi-node/issues/list",
+  "bugs": "https://github.com/DEDAjs/cgi-node/issues",
   "author": "Uei Richo <Uei.Richo@gmail.com>",
   "license": "GNU GPL v3",
   "repository": {
-    "type": "svn",
+    "type": "git",
     "url": "http://cgi-node.googlecode.com/svn/trunk/"
   },
   "main": "./lib/cgi-node",
   "bin": {
     "cgi-node": "./bin/cgi-node"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "engines": {
     "node": ">=0.10"
   }
