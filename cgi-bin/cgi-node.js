@@ -1,4 +1,4 @@
-#!"D:/Programs/nodejs/node.exe"
+#!/usr/bin/env node
 
 
 
@@ -28,13 +28,13 @@ SOFTWARE.
 @Author: Uei Richo
 @Email: Uei.Richo@gmail.com
 
- This is the global configuration object for CgiNode. 
- 
+ This is the global configuration object for CgiNode.
+
  NOTE: It is not in a JSON file because we want to compile it directly within the final cig-node.js file to optimize load time.
 */
-var CgiNodeConfig = 
+const CgiNodeConfig =
 {
-	Version: '0.2.1',
+	Version: '0.2',
 
 	StartTag: '<?',	// Not being used yet.
 	EndTag: '<?', // Not being used yet.
@@ -911,18 +911,20 @@ SOFTWARE.
 */
 
 // Add the required modules.
-var VM = require('vm');
-var FS = require('fs');
-var URL = require('url');
-var Path = require('path');
-var Crypto = require('crypto');
-var QueryString = require('querystring');
+const VM = require('vm');
+const FS = require('fs');
+const URL = require('url');
+const Path = require('path');
+const Crypto = require('crypto');
+const QueryString = require('querystring');
 
-// The NodeCGI context.
-var cgiNodeContext = null;
+/**
+ * The NodeCGI context.
+ */
+let cgiNodeContext = new CgiHttpContext();;
 
 /*
- The first thing we are going to do is set up a way to catch any global 
+ The first thing we are going to do is set up a way to catch any global
  exceptions and send them to the client. This is extremely helpful when developing code.
 */
 process.on('uncaughtException', function(error)
@@ -944,13 +946,10 @@ process.on('exit', function(code)
 {
 	// Save the session back to the file.
 	cgiNodeContext.session.save();
-	
+
 	// Clean up any sessions that have expired.
 	cgiNodeContext.session.cleanUp();
 });
-
-// Create the CGI context and execute the requested file.
-cgiNodeContext = new CgiHttpContext();
 
 // Create a callback function that will get called when everything is loaded and ready to go. This will execute the script.
 var onReady = function() { cgiNodeContext.include(process.env.PATH_TRANSLATED); };
@@ -959,5 +958,9 @@ var onReady = function() { cgiNodeContext.include(process.env.PATH_TRANSLATED); 
 cgiNodeContext.request.method = 'GET';
 
 // If the HTTP method is a 'POST' then read the post data. Otherwise process is ready.
-if (cgiNodeContext.request.method != 'POST') onReady();
-else cgiNodeContext.request.readPost(onReady);
+if (cgiNodeContext.request.method != 'POST') {
+	onReady();
+}
+else {
+	cgiNodeContext.request.readPost(onReady);
+}

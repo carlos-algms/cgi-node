@@ -15,7 +15,14 @@
   "bin": {
     "cgi-node": "./bin/cgi-node"
   },
+  "scripts": {
+    "build": "node src/build.js"
+  },
   "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^16",
+    "terser": "^5.15.1"
+  },
   "engines": {
     "node": ">=0.10"
   }
