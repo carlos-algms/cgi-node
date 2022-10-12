@@ -104,7 +104,7 @@ function CgiHttpSession(request, response) {
 		// Ensure the session is actually the requester's session.
 		// TODO: create new session if this occurs. Don't throw exception.
 		if (session.ipAddress != request.server.remote_addr) {
-			throw 'Invalid session ID!';
+			throw new Error('Invalid session ID!');
 		}
 
 		// Copy the session object data into this object.

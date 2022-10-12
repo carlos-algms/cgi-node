@@ -166,8 +166,41 @@ function CgiHttpContext() {
 		};
 
 		self.response.write(
-			'<style>.Logo{ text-align: left; font-size: 36px !important; } .NodeASPTable{ font-family: arial; font-size: 12px; margin: auto; border-collapse: collapse; width: 600px} .NodeASPTable TH{ background-color: #303030; color: white; font-size: 14px; padding: 10px} .NodeASPTable TD{ padding: 5px; } .NodeASPTable TR TD:nth-child(1){ background: #d9ebb3; }</style>',
+			`<style>
+					.Logo {
+						text-align: left;
+						font-size: 36px !important;
+					}
+
+					.NodeASPTable {
+						font-family: arial;
+						margin: auto;
+						border-collapse: collapse;
+						width: 100%;
+					}
+
+					.NodeASPTable th {
+						background-color: #303030;
+						color: white;
+						font-size: 2em;
+						padding: 10px;
+						text-align: left;
+					}
+
+					.NodeASPTable td {
+						padding: 5px;
+					}
+
+					.NodeASPTable td + td {
+						word-break: break-all;
+					}
+
+					.NodeASPTable tr td:nth-child(1) {
+						background: #d9ebb3;
+					}
+			</style>`,
 		);
+
 		self.response.write('<table class="NodeASPTable" border="1">');
 		self.response.write(
 			'<tr><th colspan="2" class="Logo">CGI-NODE v' + CgiNodeConfig.Version + '</th></tr>',

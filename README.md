@@ -1,15 +1,14 @@
-cgi-node
-========
+# cgi-node
 
 CGI-Node is designed to replace PHP on any shared web hosting site.
 
-CGI-Node provides the ability to run JavaScript on any web server just like PHP as a CGI using Node.js. 
+CGI-Node provides the ability to run JavaScript on any web server just like PHP as a CGI using Node.js.
 
 Essentially allowing developers to use a single programming language, JavaScript, for both client and server. You can even run the same code (libraries) on the client or server, reducing development time and code base.
 
 CGI-Node run on shared hosting sites running Apache. It can run along side PHP.
 
-<h2>Features</h2>
+## Features
 
 <ul>
   <li>Complete and easy access to the HTTP Request:
@@ -53,3 +52,24 @@ CGI-Node run on shared hosting sites running Apache. It can run along side PHP.
 </ul>
 
 That's it!
+
+## Required Apache Modules:
+
+- mod_actions
+- mod_cgi
+
+## Testing it on your machine
+
+There is a [Dockerfile](./Docker/Dockerfile) which will download NodeJS, enable the required Apache's Mods, and run port 8080.
+
+Requirements:
+
+- docker
+- docker-compose
+
+1. Run:
+   ```shell
+   docker-compose up
+   ```
+1. Then access the Url:
+   http://localhost:8080

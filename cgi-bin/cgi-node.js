@@ -46,7 +46,7 @@ const CgiNodeConfig = {
 
 	SessionCookie: 'CGI-NODE-SESSIONID',
 	SessionTimeOut: 15 * 60 * 1000, // 15 minutes
-	SessionPath: 'D:/Programs/nodejs/sessions/', // TODO define a session path
+	SessionPath: '/usr/local/apache2/node-sessions', // TODO define a session path
 };
 
 
@@ -82,7 +82,7 @@ SOFTWARE.
  * The CGI Context defines the global methods and variables that will be available for the executing scripts.
  */
 function CgiHttpContext() {
-	var self = this;
+	const self = this;
 
 	/**
 	 * This array contains all the scripts that have been included within the session.
@@ -138,7 +138,7 @@ function CgiHttpContext() {
 	 * or if not specified then the base script path.
 	 * @param {string} path
 	 */
-	this.mapPath = function (path) {
+	this.mapPath = (path) => {
 		const root = Path.dirname(self.request.server.path_translated);
 		return Path.resolve(root, path);
 	};
@@ -149,7 +149,7 @@ function CgiHttpContext() {
 	 *
 	 * @param {string} filePath
 	 */
-	this.include = function (filePath) {
+	this.include = (filePath) => {
 		// Resolve the script path.
 		const path = self.mapPath(filePath);
 
@@ -189,11 +189,11 @@ function CgiHttpContext() {
 		VM.runInContext(script.code, self.__vmContext, script.path);
 	};
 
-	/*
-	 This method is similar to PhpInfo(). It outputs all the HTTP request and server information and variables
-	 to the stream in HTML format.
-	*/
-	this.cgiNodeInfo = function () {
+	/**
+	 * This method is similar to PhpInfo(). It outputs all the HTTP request and server information and variables
+	 * to the stream in HTML format.
+	 */
+	this.cgiNodeInfo = () => {
 		/**
 		 * @param {string} title
 		 * @param {any} object TODO better type this param
@@ -207,7 +207,7 @@ function CgiHttpContext() {
 				} else if (typeof value === 'object') {
 					let htmlValue = '<table class="NodeASPTable" border="0" style="margin: 0px">';
 
-					for (var subName in value) {
+					for (let subName in value) {
 						htmlValue += '<tr><td>' + subName + '</td><td>' + value[subName] + '</td></tr>';
 					}
 					value = htmlValue + '</table>';
@@ -218,8 +218,41 @@ function CgiHttpContext() {
 		};
 
 		self.response.write(
-			'<style>.Logo{ text-align: left; font-size: 36px !important; } .NodeASPTable{ font-family: arial; font-size: 12px; margin: auto; border-collapse: collapse; width: 600px} .NodeASPTable TH{ background-color: #303030; color: white; font-size: 14px; padding: 10px} .NodeASPTable TD{ padding: 5px; } .NodeASPTable TR TD:nth-child(1){ background: #d9ebb3; }</style>',
+			`<style>
+					.Logo {
+						text-align: left;
+						font-size: 36px !important;
+					}
+
+					.NodeASPTable {
+						font-family: arial;
+						margin: auto;
+						border-collapse: collapse;
+						width: 100%;
+					}
+
+					.NodeASPTable th {
+						background-color: #303030;
+						color: white;
+						font-size: 2em;
+						padding: 10px;
+						text-align: left;
+					}
+
+					.NodeASPTable td {
+						padding: 5px;
+					}
+
+					.NodeASPTable td + td {
+						word-break: break-all;
+					}
+
+					.NodeASPTable tr td:nth-child(1) {
+						background: #d9ebb3;
+					}
+			</style>`,
 		);
+
 		self.response.write('<table class="NodeASPTable" border="1">');
 		self.response.write(
 			'<tr><th colspan="2" class="Logo">CGI-NODE v' + CgiNodeConfig.Version + '</th></tr>',
@@ -355,7 +388,7 @@ function CgiHttpSession(request, response) {
 		// Ensure the session is actually the requester's session.
 		// TODO: create new session if this occurs. Don't throw exception.
 		if (session.ipAddress != request.server.remote_addr) {
-			throw 'Invalid session ID!';
+			throw new Error('Invalid session ID!');
 		}
 
 		// Copy the session object data into this object.
@@ -882,6 +915,7 @@ var CgiParser = {
 				}
 				// If the close tag was not found then throw exception. TODO: get the line number of start tag for more detailed error reporting.
 				else {
+					// TODO: check if we reached the end of the file before throwing, same as PHP
 					throw new Error('Missing close tag ?>');
 				}
 			}
@@ -914,7 +948,7 @@ var CgiParser = {
 		// Traverse the variables and parse them out into server or HTTP header variables.
 		for (let name in envVariables) {
 			// Get the value and convert the name into lower case to start.
-			var value = envVariables[name];
+			const value = envVariables[name];
 			name = name.toLowerCase();
 
 			// If starts with http then remove 'http_' and add it to the http header array, otherwise add it to the server array.
@@ -947,7 +981,7 @@ var CgiParser = {
 		post.parts = postData.split(boundary);
 
 		// Traverse the parts and parse them as if they where a single HTTP header and body.
-		for (var index = 0; index < post.parts.length; index++) {
+		for (let index = 0; index < post.parts.length; index++) {
 			// TODO: what to do on multi-part POST?
 		}
 
@@ -1072,7 +1106,7 @@ let cgiNodeContext = null;
  The first thing we are going to do is set up a way to catch any global
  exceptions and send them to the client. This is extremely helpful when developing code.
 */
-process.on('uncaughtException', function (error) {
+process.on('uncaughtException', (error) => {
 	// Build the HTML error.
 	const htmlError = `
 	<br/>
@@ -1087,14 +1121,14 @@ process.on('uncaughtException', function (error) {
 		cgiNodeContext.response.write(htmlError);
 	} else {
 		// Otherwise send an HTTP header followed by the error.
-		process.stdout.write('Content-type: text/html; charset=iso-8859-1\n\n' + htmlError);
+		process.stdout.write('Content-type: text/html; charset=utf-8\n\n' + htmlError);
 	}
 });
 
 /*
  When the process exists make sure to save any session data back to the file.
 */
-process.on('exit', function () {
+process.on('exit', () => {
 	if (!cgiNodeContext) {
 		return;
 	}
@@ -1109,7 +1143,7 @@ process.on('exit', function () {
 cgiNodeContext = new CgiHttpContext();
 
 // Create a callback function that will get called when everything is loaded and ready to go. This will execute the script.
-const onReady = function () {
+const onReady = () => {
 	if (!cgiNodeContext) {
 		throw new TypeError('Cgi Node Context not created');
 	}

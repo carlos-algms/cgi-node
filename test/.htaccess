@@ -1,3 +1,3 @@
-Action         "cgi-node" "/cgi-node/cgi-bin/cgi-node.dev.js" 
-AddHandler     "cgi-node" ".jss"
-DirectoryIndex "index.jss"
+Action 					cgi-node	/cgi-bin/cgi-node.js
+AddHandler			cgi-node	.jss
+DirectoryIndex  index.jss

@@ -1,4 +1,4 @@
-#!"D:/Programs/nodejs/node.exe"
+#!/usr/bin/env node
 
 /*
 The MIT License (MIT)

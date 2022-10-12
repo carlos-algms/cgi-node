@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  site:
+    build:
+      context: ./Docker
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:80
+    restart: 'no'
+    volumes:
+      - ./cgi-bin/cgi-node.js:/usr/local/apache2/cgi-bin/cgi-node.js
+      - ./test:/usr/local/apache2/htdocs

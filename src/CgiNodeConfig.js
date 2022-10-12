@@ -42,5 +42,5 @@ const CgiNodeConfig = {
 
 	SessionCookie: 'CGI-NODE-SESSIONID',
 	SessionTimeOut: 15 * 60 * 1000, // 15 minutes
-	SessionPath: 'D:/Programs/nodejs/sessions/', // TODO define a session path
+	SessionPath: '/usr/local/apache2/node-sessions', // TODO define a session path
 };

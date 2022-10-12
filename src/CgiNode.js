@@ -58,7 +58,7 @@ process.on('uncaughtException', (error) => {
 		cgiNodeContext.response.write(htmlError);
 	} else {
 		// Otherwise send an HTTP header followed by the error.
-		process.stdout.write('Content-type: text/html; charset=iso-8859-1\n\n' + htmlError);
+		process.stdout.write('Content-type: text/html; charset=utf-8\n\n' + htmlError);
 	}
 });
 

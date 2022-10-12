@@ -110,6 +110,7 @@ var CgiParser = {
 				}
 				// If the close tag was not found then throw exception. TODO: get the line number of start tag for more detailed error reporting.
 				else {
+					// TODO: check if we reached the end of the file before throwing, same as PHP
 					throw new Error('Missing close tag ?>');
 				}
 			}
