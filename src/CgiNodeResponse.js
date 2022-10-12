@@ -23,62 +23,67 @@ SOFTWARE.
 
 @Author: Uei Richo
 @Email: Uei.Richo@gmail.com
-
- The HTTP response is an object that contains response header and content methods to 
- return valid HTTP response to the client.
 */
-function CgiHttpResponse() 
-{
-	var self = this;
-	
-	/*
-	 This is the session object, it is set by the session when it is created.
-	 This is used to write the cookies to the client when the header is sent.
-	*/
+
+/**
+ * The HTTP response is an object that contains response header and content methods to
+ * return valid HTTP response to the client.
+ */
+function CgiHttpResponse() {
+	const self = this;
+
+	/**
+	 * This is the session object, it is set by the session when it is created.
+	 * This is used to write the cookies to the client when the header is sent.
+	 * @type {NodeCgiSession}
+	 */
+	// @ts-ignore
 	this.session = null;
 
-	/*
-	 Defines if the HTTP headers have already been sent or not. The user can choose to send the 
-	 headers manually by calling sendHeaders, or it is done automatically the first time the 'write' method
-	 is called.
-	*/
+	/**
+	 * Defines if the HTTP headers have already been sent or not.
+	 * The user can choose to send the headers manually by calling sendHeaders,
+	 * or it is done automatically the first time the 'write' method is called.
+	 * @type {boolean}
+	 */
 	this.isHeaderSent = false;
 
-	/*
-	 This object defines the list of name/value header of the HTTP headers. These can be manipulated directly
-	 by the caller. Set, get, remove methods are not required send the caller can access the header object directly.
+	/**
+	 * This object defines the list of name/value header of the HTTP headers. These can be manipulated directly
+	 * by the caller. Set, get, remove methods are not required send the caller can access the header object directly.
+	 *
+	 * For reference purposes, here are the headers operations:
+	 * Set: response.headers[ '<name>' ] = <value>;
+	 * Get: response.headers[ '<name>' ];
+	 * Remove: delete response.headers[ '<name>' ]
+	 * @type {Record<string, string>}
+	 */
+	this.headers = { 'content-type': 'text/html; charset=utf-8' };
 
-	 For reference purposes, here are the headers operations:
-	 Set: response.headers[ '<name>' ] = <value>;
-	 Get: response.headers[ '<name>' ];
-	 Remove: delete response.headers[ '<name>' ]
-	*/
-	this.headers = { 'content-type': 'text/html; charset=iso-8859-1' };
-
-	/*
-	 Sends the current response.headers to the client if it has not yet been sent.
-	 After the header is sent it will not be sent again even if the method is called explicitly. 
-	 Headers changed within response.headers after the headers have been sent will not be sent.
-	*/
-	this.sendHeaders = function()
-	{
+	/**
+	 * Sends the current response.headers to the client if it has not yet been sent.
+	 * After the header is sent it will not be sent again even if the method is called explicitly.
+	 * Headers changed within response.headers after the headers have been sent will not be sent.
+	 */
+	this.sendHeaders = () => {
 		// If the response has already been send then return;
 		if (self.isHeaderSent) return;
 
 		// Set the header as sent and send it.
-		self.isHeaderSent = true; 
+		self.isHeaderSent = true;
 
-		// Traverse the headers and output them 
-		for (var name in self.headers) process.stdout.write( name + ':' + self.headers[name] + '\r\n');
-		
+		// Traverse the headers and output them
+		for (let name in self.headers) {
+			process.stdout.write(name + ':' + self.headers[name] + '\r\n');
+		}
+
 		// Traverse the session cookies and send any cookies that has not yet been sent or that has been updated.
-		for (var name in self.session.cookies)
-		{
-			var cookie = self.session.cookies[name];
-			if (cookie.notSent === true)
-			{			
-				delete(cookie.notSent);
-				process.stdout.write( 'Set-Cookie:' + CgiParser.serializeCookie(cookie) + '\r\n' );
+		for (let name in self.session.cookies) {
+			const cookie = self.session.cookies[name];
+
+			if (cookie.notSent === true) {
+				delete cookie.notSent;
+				process.stdout.write('Set-Cookie:' + CgiParser.serializeCookie(cookie) + '\r\n');
 			}
 		}
 
@@ -86,24 +91,23 @@ function CgiHttpResponse()
 		process.stdout.write('\r\n');
 	};
 
-	/*
-	 Writes the given string directly to the response output stream.
-	 If the headers have not yet been sent to the client, then sends them.
-	*/
-	this.write = function(string)
-	{
+	/**
+	 * Writes the given string directly to the response output stream.
+	 * If the headers have not yet been sent to the client, then sends them.
+	 * @param {string} content
+	 */
+	this.write = (content) => {
 		// Send the headers if they not have been sent.
 		self.sendHeaders();
 
 		// Send the string to the client.
-		process.stdout.write(string.toString());
+		process.stdout.write(content.toString());
 	};
 
-	/*
-	 Sends any headers if not sent yet and exists the process.
-	*/
-	this.end = function()
-	{
+	/**
+	 * Sends any headers if not sent yet and exists the process.
+	 */
+	this.end = () => {
 		// If the header was not yet sent then send it.
 		self.sendHeaders();
 

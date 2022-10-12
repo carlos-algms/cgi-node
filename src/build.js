@@ -37,11 +37,12 @@ const { minify } = require('terser');
 function CgiNodeBuilder() {
 	const self = this;
 
-	/*
-	 Gets the content for all the given files, concatenates them and returns them.
-	 NOTE: The order of the files does matter, make sure they are in the right order.
-	*/
-	this.getSourceCode = function (files) {
+	/**
+	 * Gets the content for all the given files, concatenates them and returns them.
+	 * NOTE: The order of the files does matter, make sure they are in the right order.
+	 * @param {string[]} files
+	 */
+	this.getSourceCode = (files) => {
 		let code = '';
 		self.progress('Reading file content...');
 
@@ -60,7 +61,7 @@ function CgiNodeBuilder() {
 	 * Minimize the code
 	 * @param {string} code
 	 */
-	this.optimize = async function (code) {
+	this.optimize = async (code) => {
 		self.progress('Optimizing Code');
 
 		let minifyResult = await minify(code, {
@@ -71,7 +72,7 @@ function CgiNodeBuilder() {
 			},
 		});
 
-		return minifyResult.code;
+		return minifyResult.code || '';
 	};
 
 	/**
@@ -79,7 +80,7 @@ function CgiNodeBuilder() {
 	 * @param {string} code
 	 * @param {string} outputPath
 	 */
-	this.output = function (code, outputPath) {
+	this.output = (code, outputPath) => {
 		self.progress('Writing output file: ' + outputPath);
 		// Write the file to the destination location.
 		FS.writeFileSync(outputPath, code, { encoding: 'utf8', flag: 'w' });
@@ -91,7 +92,7 @@ function CgiNodeBuilder() {
 	 * @param {string} outputPath
 	 * @param {string} nodeExecPath
 	 */
-	this.run = async function (files, outputPath, nodeExecPath) {
+	this.run = async (files, outputPath, nodeExecPath) => {
 		self.progress('Starting build...');
 
 		// Get the code from the files.
@@ -111,7 +112,7 @@ function CgiNodeBuilder() {
 	 * Formats the given progress message to HTML and writes it to the output stream.
 	 * @param {string} message
 	 */
-	this.progress = function (message) {
+	this.progress = (message) => {
 		process.stdout.write(message + '\n');
 	};
 }

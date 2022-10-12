@@ -23,23 +23,24 @@ SOFTWARE.
 
 @Author: Uei Richo
 @Email: Uei.Richo@gmail.com
-
- This is the global configuration object for CgiNode. 
- 
- NOTE: It is not in a JSON file because we want to compile it directly within the final cig-node.js file to optimize load time.
 */
-var CgiNodeConfig = 
-{
-	Version: '0.2',
 
-	StartTag: '<?',	// Not being used yet.
-	EndTag: '<?', // Not being used yet.
+/**
+ * This is the global configuration object for CgiNode.
+ *
+ * NOTE: It is not in a JSON file because we want to compile it directly within the final cig-node.js file to optimize load time.
+ */
+const CgiNodeConfig = {
+	Version: '0.2.2',
+
+	StartTag: '<?',
+	EndTag: '?>',
 
 	ScriptExtensions: ['.js'], // Not being used yet.
 
 	EmbededScriptExtensions: ['.jss'], // Not being used yet.
 
 	SessionCookie: 'CGI-NODE-SESSIONID',
-	SessionTimeOut: 15*60, // 15 minutes
-	SessionPath: 'D:/Programs/nodejs/sessions/'
+	SessionTimeOut: 15 * 60 * 1000, // 15 minutes
+	SessionPath: 'D:/Programs/nodejs/sessions/', // TODO define a session path
 };

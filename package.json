@@ -11,19 +11,22 @@
     "type": "git",
     "url": "http://cgi-node.googlecode.com/svn/trunk/"
   },
-  "main": "./lib/cgi-node",
+  "main": "./cgi-bin/cgi-node.js",
   "bin": {
-    "cgi-node": "./bin/cgi-node"
+    "cgi-node": "./cgi-bin/cgi-node.js"
   },
   "scripts": {
-    "build": "node src/build.js"
+    "build": "node src/build.js",
+    "type-check": "tsc --noEmit -p jsconfig.json"
   },
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^16",
-    "terser": "^5.15.1"
+    "terser": "^5.15.1",
+    "typescript": "^4.8.4"
   },
   "engines": {
     "node": ">=0.10"
-  }
+  },
+  "type": "commonjs"
 }

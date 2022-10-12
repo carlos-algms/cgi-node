@@ -1,10 +1,21 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "module": "commonjs",
+    "rootDir": "./src",
+    "outFile": "./cgi-bin/cgi-node.js",
+    "module": "None",
+    "moduleResolution": "node",
     "target": "ES2021",
-		"checkJs": true
+    "checkJs": true,
+    "allowJs": true,
+    "isolatedModules": false,
+    "strict": true,
+    "allowUmdGlobalAccess": true,
+    "lib": ["ES2021"]
   },
   "exclude": ["node_modules", "cgi-bin"],
-  "include": ["src"],
+  "include": ["src/**/*"],
+  "typeAcquisition": {
+    "enable": false
+  }
 }

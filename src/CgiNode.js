@@ -33,46 +33,64 @@ var Path = require('path');
 var Crypto = require('crypto');
 var QueryString = require('querystring');
 
-// The NodeCGI context.
-var cgiNodeContext = null;
+/**
+ * The NodeCGI context.
+ * @type {null | CgiHttpContext}
+ */
+let cgiNodeContext = null;
 
 /*
- The first thing we are going to do is set up a way to catch any global 
+ The first thing we are going to do is set up a way to catch any global
  exceptions and send them to the client. This is extremely helpful when developing code.
 */
-process.on('uncaughtException', function(error)
-{
+process.on('uncaughtException', (error) => {
 	// Build the HTML error.
-	var htmlError = '<br/><div style="color:red"><b>EXCEPTION</b>: ' + error.message + '<i><pre>' + error.stack + '</pre></i></div></br>';
+	const htmlError = `
+	<br/>
+	<div style="color:red">
+		<b>EXCEPTION</b>: ${error.message}
+		<i><pre>${error.stack}</pre></i>
+	</div>
+	</br>`;
 
 	// If the CGI context has been created then use the response to send the error
-	if (cgiNodeContext !== null) cgiNodeContext.response.write( htmlError );
-
-	// Otherwise send an HTTP header followed by the error.
-	else process.stdout.write("Content-type: text/html; charset=iso-8859-1\n\n" + htmlError);
+	if (cgiNodeContext) {
+		cgiNodeContext.response.write(htmlError);
+	} else {
+		// Otherwise send an HTTP header followed by the error.
+		process.stdout.write('Content-type: text/html; charset=iso-8859-1\n\n' + htmlError);
+	}
 });
 
 /*
  When the process exists make sure to save any session data back to the file.
 */
-process.on('exit', function(code)
-{
+process.on('exit', () => {
+	if (!cgiNodeContext) {
+		return;
+	}
+
 	// Save the session back to the file.
 	cgiNodeContext.session.save();
-	
+
 	// Clean up any sessions that have expired.
 	cgiNodeContext.session.cleanUp();
 });
 
-// Create the CGI context and execute the requested file.
 cgiNodeContext = new CgiHttpContext();
 
 // Create a callback function that will get called when everything is loaded and ready to go. This will execute the script.
-var onReady = function() { cgiNodeContext.include(process.env.PATH_TRANSLATED); };
+const onReady = () => {
+	if (!cgiNodeContext) {
+		throw new TypeError('Cgi Node Context not created');
+	}
 
-// TODO: remove this when the POST parser is done.
-cgiNodeContext.request.method = 'GET';
+	cgiNodeContext.include(process.env.PATH_TRANSLATED);
+};
 
 // If the HTTP method is a 'POST' then read the post data. Otherwise process is ready.
-if (cgiNodeContext.request.method != 'POST') onReady();
-else cgiNodeContext.request.readPost(onReady);
+if (cgiNodeContext.request.method !== 'POST') {
+	onReady();
+} else {
+	cgiNodeContext.request.readPost(onReady);
+}
